@@ -7,16 +7,6 @@
 
 import UIKit
 
-struct ViewColor {
-    var red: CGFloat
-    var green: CGFloat
-    var blue: CGFloat
-    
-    func getCurrentColor() -> UIColor? {
-        UIColor(red: red, green: green, blue: blue, alpha: 1.0)
-    }
-}
-
 
 class ViewController: UIViewController {
 
@@ -30,42 +20,54 @@ class ViewController: UIViewController {
     @IBOutlet var greenColorSlider: UISlider!
     @IBOutlet var blueColorSlider: UISlider!
     
-    
-    private var currentColor: ViewColor = .init(red: 0, green: 0, blue: 0)
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         colorWindowView.layer.cornerRadius = 16
         
+        setColor()
+        
+        setValue(for: greenScrollLabel, greenScrollLabel, blueScrollLabel)
     }
 
-    
-//MARK: - Slider Actions
-    @IBAction func redSliderValueChanged() {
-        let sliderValue = round(redColorSlider.value * 100) / 100.0
+    @IBAction func sliderValueChanged(_ sender: UISlider) {
+        setColor()
         
-        // TODO: Optimise this, repeat code
-        redScrollLabel.text = String(sliderValue)
-        currentColor.red = CGFloat(sliderValue)
-        colorWindowView.backgroundColor = currentColor.getCurrentColor()
+        switch sender {
+        case redColorSlider:
+            redScrollLabel.text = string(from: redColorSlider)
+        case greenColorSlider:
+            greenScrollLabel.text = string(from: greenColorSlider)
+        default:
+            blueScrollLabel.text = string(from: blueColorSlider)
+        }
     }
     
-    @IBAction func greenSliderValueChanged() {
-        let sliderValue = round(greenColorSlider.value * 100) / 100.0
+    private func setColor() {
+        colorWindowView.backgroundColor = UIColor(
+            red: CGFloat(redColorSlider.value),
+            green: CGFloat(greenColorSlider.value),
+            blue: CGFloat(blueColorSlider.value),
+            alpha: 1
+        )
+    }
         
-        greenScrollLabel.text = String(sliderValue)
-        currentColor.green = CGFloat(sliderValue)
-        colorWindowView.backgroundColor = currentColor.getCurrentColor()
+    private func setValue(for labels: UILabel...) {
+        labels.forEach { label in
+            switch label {
+            case redScrollLabel:
+                redScrollLabel.text = string(from: redColorSlider)
+            case greenScrollLabel:
+                greenScrollLabel.text = string(from: greenColorSlider)
+            default:
+                blueScrollLabel.text = string(from: blueColorSlider)
+            }
+            
+        }
     }
     
-    @IBAction func blueSliderValueChanged() {
-        let sliderValue = round(blueColorSlider.value * 100) / 100.0
-        
-        blueScrollLabel.text = String(sliderValue)
-        currentColor.blue = CGFloat(sliderValue)
-        colorWindowView.backgroundColor = currentColor.getCurrentColor()
+    private func string(from slider: UISlider) -> String {
+        String(format: "%.2f", slider.value)
     }
-    
 }
 
