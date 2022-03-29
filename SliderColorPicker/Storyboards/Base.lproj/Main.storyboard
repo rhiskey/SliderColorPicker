@@ -129,17 +129,17 @@
                                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ZW7-9j-ZJe">
                                                 <rect key="frame" x="0.0" y="0.0" width="48" height="34"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                <textInputTraits key="textInputTraits"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
                                             </textField>
                                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="DF4-eX-wbB">
                                                 <rect key="frame" x="0.0" y="47" width="48" height="34"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                <textInputTraits key="textInputTraits"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
                                             </textField>
                                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="zQv-5s-xdg">
                                                 <rect key="frame" x="0.0" y="94" width="48" height="34"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                <textInputTraits key="textInputTraits"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
                                             </textField>
                                         </subviews>
                                         <constraints>
@@ -176,11 +176,14 @@
                     <connections>
                         <outlet property="blueColorSlider" destination="NIq-xF-iZC" id="pzP-td-TY4"/>
                         <outlet property="blueScrollLabel" destination="DIQ-pZ-hkC" id="gSY-pr-vcu"/>
+                        <outlet property="blueTF" destination="zQv-5s-xdg" id="Lhb-Gl-Bc5"/>
                         <outlet property="colorWindowView" destination="wk1-ds-TbF" id="YQf-3a-w0C"/>
                         <outlet property="greenColorSlider" destination="4Wq-Rp-faa" id="94I-zI-8Ri"/>
                         <outlet property="greenScrollLabel" destination="hPI-Zn-rxi" id="hwn-nr-kbQ"/>
+                        <outlet property="greenTF" destination="DF4-eX-wbB" id="B7z-AH-qZx"/>
                         <outlet property="redColorSlider" destination="815-wf-0g4" id="zwJ-8J-uOD"/>
                         <outlet property="redScrollLabel" destination="MWb-6Q-8Oq" id="B2m-vM-kT2"/>
+                        <outlet property="redTF" destination="ZW7-9j-ZJe" id="BUq-4e-ebn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

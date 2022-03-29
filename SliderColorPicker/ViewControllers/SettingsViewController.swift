@@ -20,18 +20,31 @@ class SettingsViewController: UIViewController {
     @IBOutlet var greenColorSlider: UISlider!
     @IBOutlet var blueColorSlider: UISlider!
     
+    @IBOutlet var redTF: UITextField!
+    @IBOutlet var greenTF: UITextField!
+    @IBOutlet var blueTF: UITextField!
+    
+    
     var mainScreenColor: UIColor!
     var delegate: SettingsViewControllerDelegate!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //        redColorSlider.delegate = self
-        //        greenColorSlider.delegate = self
-        //        blueColorSlider.delegate = self
+        redTF.delegate = self
+        greenTF.delegate = self
+        blueTF.delegate = self
+        
+        setInitialValues()
         
         colorWindowView.backgroundColor = mainScreenColor
         colorWindowView.layer.cornerRadius = 16
+        
         setValue(for: greenScrollLabel, greenScrollLabel, blueScrollLabel)
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        view.endEditing(true)
     }
     
     @IBAction func sliderValueChanged(_ sender: UISlider) {
@@ -40,12 +53,16 @@ class SettingsViewController: UIViewController {
         switch sender {
         case redColorSlider:
             redScrollLabel.text = string(from: redColorSlider)
+            redTF.text = string(from: redColorSlider)
         case greenColorSlider:
             greenScrollLabel.text = string(from: greenColorSlider)
+            greenTF.text = string(from: greenColorSlider)
         default:
             blueScrollLabel.text = string(from: blueColorSlider)
+            blueTF.text = string(from: blueColorSlider)
         }
     }
+    
     
     @IBAction func doneButtonPressed() {
         view.endEditing(true)
@@ -63,7 +80,28 @@ class SettingsViewController: UIViewController {
 }
 
 // MARK: - Private Methods
-extension SettingsViewController {
+extension SettingsViewController: UITextFieldDelegate{
+    private func setInitialValues() {
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+        
+        mainScreenColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        
+        redScrollLabel.text = "\(red)"
+        greenScrollLabel.text = "\(green)"
+        blueScrollLabel.text = "\(blue)"
+        
+        redColorSlider.value = Float(red)
+        greenColorSlider.value = Float(green)
+        blueColorSlider.value = Float(blue)
+        
+        redTF.text = "\(red)"
+        greenTF.text = "\(green)"
+        blueTF.text = "\(blue)"
+    }
+    
     private func setColor() {
         colorWindowView.backgroundColor = UIColor(
             red: CGFloat(redColorSlider.value),
@@ -83,25 +121,29 @@ extension SettingsViewController {
             default:
                 blueScrollLabel.text = string(from: blueColorSlider)
             }
-            
         }
     }
     
     private func string(from slider: UISlider) -> String {
         String(format: "%.2f", slider.value)
     }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        guard let newValue = textField.text else { return }
+        guard let numberValue = Float(newValue) else { return }
+        
+        setColor()
+        if textField == redTF {
+            redColorSlider.value = numberValue
+        } else if textField == greenTF {
+            greenColorSlider.value = numberValue
+        } else {
+            blueColorSlider.value = numberValue
+        }
+        
+        setValue(for: greenScrollLabel, greenScrollLabel, blueScrollLabel)
+        
+    }
 }
 
-//extension SettingsViewController: UITextFieldDelegate {
-//    func textFieldDidEndEditing(_ textField: UITextField) {
-//        guard let newValue = textField.text else { return }
-//        guard let numberValue = Int(newValue) else { return }
-//        
-////        if textField == minimumValueTF {
-////            randomNumber.minimumValue = numberValue
-////        } else {
-////            randomNumber.maximumValue = numberValue
-////        }
-//    }
-//}
 
