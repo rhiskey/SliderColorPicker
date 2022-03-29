@@ -8,28 +8,32 @@
 import UIKit
 
 
-class ViewController: UIViewController {
-
+class SettingsViewController: UIViewController {
+    
     @IBOutlet var colorWindowView: UIView!
     
     @IBOutlet var redScrollLabel: UILabel!
     @IBOutlet var greenScrollLabel: UILabel!
     @IBOutlet var blueScrollLabel: UILabel!
-
+    
     @IBOutlet var redColorSlider: UISlider!
     @IBOutlet var greenColorSlider: UISlider!
     @IBOutlet var blueColorSlider: UISlider!
     
+    var mainScreenColor: UIColor!
+    var delegate: SettingsViewControllerDelegate!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        //        redColorSlider.delegate = self
+        //        greenColorSlider.delegate = self
+        //        blueColorSlider.delegate = self
         
+        colorWindowView.backgroundColor = mainScreenColor
         colorWindowView.layer.cornerRadius = 16
-        
-        setColor()
-        
         setValue(for: greenScrollLabel, greenScrollLabel, blueScrollLabel)
     }
-
+    
     @IBAction func sliderValueChanged(_ sender: UISlider) {
         setColor()
         
@@ -43,6 +47,23 @@ class ViewController: UIViewController {
         }
     }
     
+    @IBAction func doneButtonPressed() {
+        view.endEditing(true)
+        
+        let currentScreenColor = UIColor(
+            red: CGFloat(redColorSlider.value),
+            green: CGFloat(greenColorSlider.value),
+            blue: CGFloat(blueColorSlider.value),
+            alpha: 1
+        )
+        delegate.setNewScreenColor(with: currentScreenColor)
+        dismiss(animated: true)
+    }
+    
+}
+
+// MARK: - Private Methods
+extension SettingsViewController {
     private func setColor() {
         colorWindowView.backgroundColor = UIColor(
             red: CGFloat(redColorSlider.value),
@@ -51,7 +72,7 @@ class ViewController: UIViewController {
             alpha: 1
         )
     }
-        
+    
     private func setValue(for labels: UILabel...) {
         labels.forEach { label in
             switch label {
@@ -70,4 +91,17 @@ class ViewController: UIViewController {
         String(format: "%.2f", slider.value)
     }
 }
+
+//extension SettingsViewController: UITextFieldDelegate {
+//    func textFieldDidEndEditing(_ textField: UITextField) {
+//        guard let newValue = textField.text else { return }
+//        guard let numberValue = Int(newValue) else { return }
+//        
+////        if textField == minimumValueTF {
+////            randomNumber.minimumValue = numberValue
+////        } else {
+////            randomNumber.maximumValue = numberValue
+////        }
+//    }
+//}
 
