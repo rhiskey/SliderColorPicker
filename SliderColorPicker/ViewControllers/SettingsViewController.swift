@@ -38,7 +38,7 @@ class SettingsViewController: UIViewController {
         let bar = UIToolbar()
         let done = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(doneButtonPressed))
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-
+        
         bar.items = [flexibleSpace, done]
         bar.sizeToFit()
         
@@ -95,10 +95,10 @@ class SettingsViewController: UIViewController {
 // MARK: - Private Methods
 extension SettingsViewController: UITextFieldDelegate{
     private func setInitialValues(forLabels labels: UILabel..., forSliders sliders: UISlider..., forTextFields textFields: UITextField...) {
-        var red: CGFloat = 0
-        var green: CGFloat = 0
-        var blue: CGFloat = 0
-        var alpha: CGFloat = 0
+        var red: CGFloat = 0.00
+        var green: CGFloat = 0.00
+        var blue: CGFloat = 0.00
+        var alpha: CGFloat = 0.00
         
         mainScreenColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
         
@@ -112,7 +112,7 @@ extension SettingsViewController: UITextFieldDelegate{
                 blueScrollLabel.text = "\(blue)"
             }
         }
-
+        
         sliders.forEach{ slider in
             switch slider {
             case redColorSlider:
@@ -180,14 +180,31 @@ extension SettingsViewController: UITextFieldDelegate{
         guard let newValue = textField.text else { return }
         guard let numberValue = Float(newValue) else { return }
         
-        if textField == redTF {
-            redColorSlider.value = numberValue
-        } else if textField == greenTF {
-            greenColorSlider.value = numberValue
-        } else {
-            blueColorSlider.value = numberValue
+        if (numberValue > 1 || numberValue < 0)
+        {
+            showAlert(title: "Error!", message: "Wrong input range")
+            textField.text = "0.0"
         }
-        setValue(for: greenScrollLabel, greenScrollLabel, blueScrollLabel)
-        setColor()
+        else {
+            if textField == redTF {
+                redColorSlider.value = numberValue
+            } else if textField == greenTF {
+                greenColorSlider.value = numberValue
+            } else {
+                blueColorSlider.value = numberValue
+            }
+            setValue(for: greenScrollLabel, greenScrollLabel, blueScrollLabel)
+            setColor()
+        }
+    }
+    
+    // MARK: - Alert
+    private func showAlert(title: String, message massage: String, textField: UITextField? = nil) {
+        let alert = UIAlertController(title: title, message: massage, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+            textField?.text = ""
+        }
+        alert.addAction(okAction)
+        present(alert, animated: true)
     }
 }
