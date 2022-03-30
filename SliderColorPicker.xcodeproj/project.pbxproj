@@ -79,6 +79,7 @@
 		5BBDA12227E50AAD0052BDEB = {
 			isa = PBXGroup;
 			children = (
+				5BBDA14227E694CA0052BDEB /* README.md */,
 				5BBDA12D27E50AAD0052BDEB /* SliderColorPicker */,
 				5BBDA12C27E50AAD0052BDEB /* Products */,
 			);
@@ -99,7 +100,6 @@
 				5BBAE10A27F3726C009C3EC9 /* ViewControllers */,
 				5BBAE10727F371FA009C3EC9 /* Storyboards */,
 				5BBAE10927F37214009C3EC9 /* Resources */,
-				5BBDA14227E694CA0052BDEB /* README.md */,
 			);
 			path = SliderColorPicker;
 			sourceTree = "<group>";
