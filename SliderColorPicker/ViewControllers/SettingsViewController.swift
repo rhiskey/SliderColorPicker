@@ -30,11 +30,21 @@ class SettingsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         redTF.delegate = self
         greenTF.delegate = self
         blueTF.delegate = self
         
-        setInitialValues()
+        let bar = UIToolbar()
+        let done = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(doneButtonPressed))
+        bar.items = [done]
+        bar.sizeToFit()
+        
+        setBarsInTextFields(bar: bar, for: redTF, greenTF, blueTF)
+        
+        setInitialValues(forLabels: redScrollLabel, greenScrollLabel, blueScrollLabel,
+                         forSliders: redColorSlider, greenColorSlider, blueColorSlider,
+                         forTextFields: redTF, greenTF, blueTF)
         
         colorWindowView.backgroundColor = mainScreenColor
         colorWindowView.layer.cornerRadius = 16
@@ -74,6 +84,7 @@ class SettingsViewController: UIViewController {
             alpha: 1
         )
         delegate.setNewScreenColor(with: currentScreenColor)
+        
         dismiss(animated: true)
     }
     
@@ -81,7 +92,7 @@ class SettingsViewController: UIViewController {
 
 // MARK: - Private Methods
 extension SettingsViewController: UITextFieldDelegate{
-    private func setInitialValues() {
+    private func setInitialValues(forLabels labels: UILabel..., forSliders sliders: UISlider..., forTextFields textFields: UITextField...) {
         var red: CGFloat = 0
         var green: CGFloat = 0
         var blue: CGFloat = 0
@@ -89,17 +100,38 @@ extension SettingsViewController: UITextFieldDelegate{
         
         mainScreenColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
         
-        redScrollLabel.text = "\(red)"
-        greenScrollLabel.text = "\(green)"
-        blueScrollLabel.text = "\(blue)"
+        labels.forEach { label in
+            switch label {
+            case redScrollLabel:
+                redScrollLabel.text = "\(red)"
+            case greenScrollLabel:
+                greenScrollLabel.text = "\(green)"
+            default:
+                blueScrollLabel.text = "\(blue)"
+            }
+        }
+
+        sliders.forEach{ slider in
+            switch slider {
+            case redColorSlider:
+                redColorSlider.value = Float(red)
+            case greenColorSlider:
+                greenColorSlider.value = Float(green)
+            default:
+                blueColorSlider.value = Float(blue)
+            }
+        }
         
-        redColorSlider.value = Float(red)
-        greenColorSlider.value = Float(green)
-        blueColorSlider.value = Float(blue)
-        
-        redTF.text = "\(red)"
-        greenTF.text = "\(green)"
-        blueTF.text = "\(blue)"
+        textFields.forEach{ field in
+            switch field{
+            case redTF:
+                redTF.text = "\(red)"
+            case greenTF:
+                greenTF.text = "\(green)"
+            default:
+                blueTF.text = "\(blue)"
+            }
+        }
     }
     
     private func setColor() {
@@ -124,15 +156,28 @@ extension SettingsViewController: UITextFieldDelegate{
         }
     }
     
+    private func setBarsInTextFields(bar uiToolbar: UIToolbar, for textField: UITextField...) {
+        textField.forEach { field in
+            switch field {
+            case redTF:
+                redTF.inputAccessoryView = uiToolbar
+            case greenTF:
+                greenTF.inputAccessoryView = uiToolbar
+            default:
+                blueTF.inputAccessoryView = uiToolbar
+            }
+        }
+    }
+    
     private func string(from slider: UISlider) -> String {
         String(format: "%.2f", slider.value)
     }
+    
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard let newValue = textField.text else { return }
         guard let numberValue = Float(newValue) else { return }
         
-        setColor()
         if textField == redTF {
             redColorSlider.value = numberValue
         } else if textField == greenTF {
@@ -140,10 +185,7 @@ extension SettingsViewController: UITextFieldDelegate{
         } else {
             blueColorSlider.value = numberValue
         }
-        
         setValue(for: greenScrollLabel, greenScrollLabel, blueScrollLabel)
-        
+        setColor()
     }
 }
-
-
