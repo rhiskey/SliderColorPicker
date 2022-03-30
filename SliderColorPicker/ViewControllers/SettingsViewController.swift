@@ -37,7 +37,9 @@ class SettingsViewController: UIViewController {
         
         let bar = UIToolbar()
         let done = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(doneButtonPressed))
-        bar.items = [done]
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+
+        bar.items = [flexibleSpace, done]
         bar.sizeToFit()
         
         setBarsInTextFields(bar: bar, for: redTF, greenTF, blueTF)
@@ -125,11 +127,11 @@ extension SettingsViewController: UITextFieldDelegate{
         textFields.forEach{ field in
             switch field{
             case redTF:
-                redTF.text = "\(red)"
+                redTF.text = "\(round(red * 100) / 100.0)"
             case greenTF:
-                greenTF.text = "\(green)"
+                greenTF.text = "\(round(green * 100) / 100.0)"
             default:
-                blueTF.text = "\(blue)"
+                blueTF.text = "\(round(blue * 100) / 100.0)"
             }
         }
     }
