@@ -112,7 +112,7 @@ extension SettingsViewController: UITextFieldDelegate {
         
         let doneBI = UIBarButtonItem(
             barButtonSystemItem: .done,
-            target: self,
+            target: self, // where to call
             action: #selector(doneButtonPressed)
         )
         
