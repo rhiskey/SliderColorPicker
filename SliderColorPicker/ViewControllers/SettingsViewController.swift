@@ -31,107 +31,122 @@ class SettingsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        colorWindowView.backgroundColor = mainScreenColor
+        
+        colorWindowView.layer.cornerRadius = 16
+        
+        redColorSlider.tintColor = .red
+        greenColorSlider.tintColor = .green
+        
         redTF.delegate = self
         greenTF.delegate = self
         blueTF.delegate = self
         
-        let bar = UIToolbar()
-        let done = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(doneButtonPressed))
-        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        
-        bar.items = [flexibleSpace, done]
-        bar.sizeToFit()
-        
-        setBarsInTextFields(bar: bar, for: redTF, greenTF, blueTF)
-        
-        setInitialValues(forLabels: redScrollLabel, greenScrollLabel, blueScrollLabel,
-                         forSliders: redColorSlider, greenColorSlider, blueColorSlider,
-                         forTextFields: redTF, greenTF, blueTF)
-        
-        colorWindowView.backgroundColor = mainScreenColor
-        colorWindowView.layer.cornerRadius = 16
-        
+        setSliders()
+        setValue(for: redTF, greenTF, blueTF)
         setValue(for: greenScrollLabel, greenScrollLabel, blueScrollLabel)
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesBegan(touches, with: event)
-        view.endEditing(true)
-    }
-    
     @IBAction func sliderValueChanged(_ sender: UISlider) {
-        setColor()
         
         switch sender {
         case redColorSlider:
-            redScrollLabel.text = string(from: redColorSlider)
-            redTF.text = string(from: redColorSlider)
+            setValue(for: redScrollLabel)
+            setValue(for: redTF)
         case greenColorSlider:
-            greenScrollLabel.text = string(from: greenColorSlider)
-            greenTF.text = string(from: greenColorSlider)
+            setValue(for: greenScrollLabel)
+            setValue(for: greenTF)
         default:
-            blueScrollLabel.text = string(from: blueColorSlider)
-            blueTF.text = string(from: blueColorSlider)
+            setValue(for: blueScrollLabel)
+            setValue(for: blueTF)
         }
+        
+        setColor()
     }
     
     
     @IBAction func doneButtonPressed() {
-        view.endEditing(true)
-        
-        let currentScreenColor = UIColor(
-            red: CGFloat(redColorSlider.value),
-            green: CGFloat(greenColorSlider.value),
-            blue: CGFloat(blueColorSlider.value),
-            alpha: 1
-        )
-        delegate.setNewScreenColor(with: currentScreenColor)
-        
+//        view.endEditing(true)
+        delegate.setNewScreenColor(colorWindowView.backgroundColor ?? .white)
         dismiss(animated: true)
     }
     
 }
 
-// MARK: - Private Methods
-extension SettingsViewController: UITextFieldDelegate{
-    private func setInitialValues(forLabels labels: UILabel..., forSliders sliders: UISlider..., forTextFields textFields: UITextField...) {
-        var red: CGFloat = 0.00
-        var green: CGFloat = 0.00
-        var blue: CGFloat = 0.00
-        var alpha: CGFloat = 0.00
+// MARK: - UITextFieldDelegate
+extension SettingsViewController: UITextFieldDelegate {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        view.endEditing(true)
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+
+        guard let text = textField.text else { return }
         
-        mainScreenColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        if let currentValue = Float(text) {
+            switch textField {
+            case redTF:
+                redColorSlider.setValue(currentValue, animated: true)
+                setValue(for: redScrollLabel)
+            case greenTF:
+                greenColorSlider.setValue(currentValue, animated: true)
+                setValue(for: greenScrollLabel)
+            default:
+                blueColorSlider.setValue(currentValue, animated: true)
+                setValue(for: blueScrollLabel)
+            }
+            setColor()
+            return
+        }
+        
+        showAlert(title: "Error!", message: "Wrong input range")
+        textField.text = "0.0"
+    }
+    
+    // Before show edit
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        let keyboardToolbar = UIToolbar()
+        keyboardToolbar.sizeToFit()
+        textField.inputAccessoryView = keyboardToolbar
+        
+        let doneBI = UIBarButtonItem(
+            barButtonSystemItem: .done,
+            target: self,
+            action: #selector(doneButtonPressed)
+        )
+        
+        let flexibleSpace = UIBarButtonItem(
+            barButtonSystemItem: .flexibleSpace,
+            target: nil,
+            action: nil
+        )
+        
+        keyboardToolbar.items = [flexibleSpace, doneBI]
+    }
+}
+
+// MARK: - Private Methods
+extension SettingsViewController {
+    private func setSliders() {
+        let ciColor = CIColor(color: mainScreenColor)
+        redColorSlider.value = Float(ciColor.red)
+        greenColorSlider.value = Float(ciColor.green)
+        blueColorSlider.value = Float(ciColor.blue)
+
+    }
+    
+    private func setInitialValues(forLabels labels: UILabel..., forSliders sliders: UISlider..., forTextFields textFields: UITextField...) {
+        let ciColor = CIColor(color: mainScreenColor)
         
         labels.forEach { label in
             switch label {
             case redScrollLabel:
-                redScrollLabel.text = "\(red)"
+                redScrollLabel.text = "\(ciColor.red)"
             case greenScrollLabel:
-                greenScrollLabel.text = "\(green)"
+                greenScrollLabel.text = "\(ciColor.green)"
             default:
-                blueScrollLabel.text = "\(blue)"
-            }
-        }
-        
-        sliders.forEach{ slider in
-            switch slider {
-            case redColorSlider:
-                redColorSlider.value = Float(red)
-            case greenColorSlider:
-                greenColorSlider.value = Float(green)
-            default:
-                blueColorSlider.value = Float(blue)
-            }
-        }
-        
-        textFields.forEach{ field in
-            switch field{
-            case redTF:
-                redTF.text = "\(round(red * 100) / 100.0)"
-            case greenTF:
-                greenTF.text = "\(round(green * 100) / 100.0)"
-            default:
-                blueTF.text = "\(round(blue * 100) / 100.0)"
+                blueScrollLabel.text = "\(ciColor.blue)"
             }
         }
     }
@@ -143,6 +158,19 @@ extension SettingsViewController: UITextFieldDelegate{
             blue: CGFloat(blueColorSlider.value),
             alpha: 1
         )
+    }
+    
+    private func setValue(for fields: UITextField...) {
+        fields.forEach { field in
+            switch field {
+            case redTF:
+                redTF.text = string(from: redColorSlider)
+            case greenTF:
+                greenTF.text = string(from: greenColorSlider)
+            default:
+                blueTF.text = string(from: blueColorSlider)
+            }
+        }
     }
     
     private func setValue(for labels: UILabel...) {
@@ -158,44 +186,8 @@ extension SettingsViewController: UITextFieldDelegate{
         }
     }
     
-    private func setBarsInTextFields(bar uiToolbar: UIToolbar, for textField: UITextField...) {
-        textField.forEach { field in
-            switch field {
-            case redTF:
-                redTF.inputAccessoryView = uiToolbar
-            case greenTF:
-                greenTF.inputAccessoryView = uiToolbar
-            default:
-                blueTF.inputAccessoryView = uiToolbar
-            }
-        }
-    }
-    
     private func string(from slider: UISlider) -> String {
         String(format: "%.2f", slider.value)
-    }
-    
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        guard let newValue = textField.text else { return }
-        guard let numberValue = Float(newValue) else { return }
-        
-        if (numberValue > 1 || numberValue < 0)
-        {
-            showAlert(title: "Error!", message: "Wrong input range")
-            textField.text = "0.0"
-        }
-        else {
-            if textField == redTF {
-                redColorSlider.value = numberValue
-            } else if textField == greenTF {
-                greenColorSlider.value = numberValue
-            } else {
-                blueColorSlider.value = numberValue
-            }
-            setValue(for: greenScrollLabel, greenScrollLabel, blueScrollLabel)
-            setColor()
-        }
     }
     
     // MARK: - Alert
